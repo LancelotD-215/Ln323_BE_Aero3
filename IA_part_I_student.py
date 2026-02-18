@@ -1,5 +1,5 @@
 #---------------------------------PROJECT: PART I---------------------#
-
+#%%
 
 import numpy as np
 import pandas as pd
@@ -26,8 +26,22 @@ X = df['message']
 y = df['label']
 
 #TO DO: PRE-PROCESS THE DATA
+# Pre-processing
 
+# Initialisation du vectoriseur
+vectorizer = CountVectorizer()
 
+# Transformation des messages en matrice de comptage
+X_vectorized = vectorizer.fit_transform(X)
+print(f"Nombre de messages (N) : {X_vectorized.shape[0]}")
+print(f"Dimension de l'espace des caractéristiques (P) : {X_vectorized.shape[1]}")
+
+# Séparation des données en données d'entrainement et de test
+X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0.2, random_state=0)
+print(f"Taille de y_train : {len(y_train)}")
+print(f"Taille de y_test : {len(y_test)}")
+
+#%% 
 # KNN
 class KNN:
     def __init__(self, k=3):
@@ -36,13 +50,14 @@ class KNN:
     def fit(self, X, y):
         self.X_train = X
         self.y_train = y
+        pass
     
     def predict(self, X):
         y_pred = [self._predict(x) for x in X]
         return np.array(y_pred)
     
     def _predict(self, x):
-     
+        pass
         #TO DO
 
 
@@ -61,6 +76,8 @@ class NaiveBayes:
         
         for idx, c in enumerate(self._classes):
            #TO DO
+           pass
+        pass
     
     def predict(self, X):
         y_pred = [self._predict(x) for x in X]
@@ -71,6 +88,7 @@ class NaiveBayes:
         
         for idx, c in enumerate(self._classes):
          #TO DO
+            pass
         
         return self._classes[np.argmax(posteriors)]
     
@@ -91,7 +109,7 @@ class LDA:
         self.cov = np.zeros((n_features, n_features))
         
         for idx, c in enumerate(self.classes):
-       
+            pass
             #TO DO
     def predict(self, X):
         y_pred = [self._predict(x) for x in X]
@@ -101,7 +119,7 @@ class LDA:
         posteriors = []
         
         for idx, c in enumerate(self.classes):
-            
+            pass
             #TO DO
             
         return self.classes[np.argmax(posteriors)]
