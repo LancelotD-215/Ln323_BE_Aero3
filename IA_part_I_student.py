@@ -58,9 +58,24 @@ class KNN:
         return np.array(y_pred)
     
     def _predict(self, x):
-        pass
-        #TO DO
-
+        # converstion des matrices sparse en array pour le calcul de distance
+        if hasattr(self.X_train, 'toarray'):
+            X_train_array = self.X_train.toarray()
+        else:
+            X_train_array = self.X_train
+        if hasattr(x, 'toarray'):
+            x_array = x.toarray().reshape(-1)
+        else:
+            x_array = x.reshape(-1)
+        
+        # Calculer les distances entre les données d'entrainement et la donnée de test
+        distances = np.linalg.norm(X_train_array - x_array, axis=1)
+        # On prend les k les plus proches
+        k_indices = np.argsort(distances)[:self.k] # k_indices est un tableau de taille k contenant les indices dans X_train des k plus proches
+        k_classe_prox = self.y_train.iloc[k_indices] # Utilisation de .iloc pour éviter les problèmes d'index pandas
+        # On retourne la classe majoritaire parmi les voisins les plus proches
+        majoritaire = np.bincount(k_classe_prox).argmax() # np.bincount retourne un tableau des apparitions de chaque classe dans k_classe_prox, argmax retourne l'indice de la classe qui a le plus d'apparitions
+        return majoritaire
 
 
 #NAIVEBAYES
@@ -129,6 +144,32 @@ class LDA:
 
 
 #TO DO: TEST OF THE ALGORITHMS 
+
+print("\n TEST DE L'ALGORITHME KNN")
+
+# Test du KNN avec k=3
+print(f"\nTest avec k=3")
+
+# Créer et entraîner le modèle
+knn = KNN(k=3)
+print("Entraînement du KNN avec k=3...")
+knn.fit(X_train, y_train)
+
+# Faire les prédictions
+print("Prédiction sur les données de test...")
+y_pred_knn = knn.predict(X_test)
+
+# Afficher les résultats
+accuracy = accuracy_score(y_test, y_pred_knn)
+print(f"Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
+
+# Rapport détaillé
+print("\nRapport de classification:")
+print(classification_report(y_test, y_pred_knn, target_names=['Ham', 'Spam']))
+
+print("\n" + "="*50)
+print("Tests terminés!")
+print("="*50)
 
 
 
