@@ -79,6 +79,7 @@ class KNN:
 
 class NaiveBayes:
     def fit(self, X, y):
+        y = np.array(y)
         n_samples, n_features = X.shape
         self._classes = np.unique(y)
         n_classes = len(self._classes)
@@ -126,6 +127,7 @@ class LDA:
         self.param = param
         
     def fit(self, X, y):
+        y = np.array(y)
         self.classes = np.unique(y)
         n_features = X.shape[1]
         self.means = np.zeros((len(self.classes), n_features))
@@ -178,10 +180,6 @@ print("Prédiction sur les données de test...")
 y_pred_knn = knn.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred_knn)
 print(f"Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
-print("\nRapport de classification:")
-print(classification_report(y_test, y_pred_knn, target_names=['Ham', 'Spam']))
-
-print("\n" + "="*50)
 
 print("\n TEST DE L'ALGORITHME NAIVE BAYES")
 
@@ -192,10 +190,6 @@ print("Prédiction sur les données de test...")
 y_pred_nb = nb.predict(X_test)
 accuracy_nb = accuracy_score(y_test, y_pred_nb)
 print(f"Accuracy: {accuracy_nb:.4f} ({accuracy_nb*100:.2f}%)")
-print("\nRapport de classification:")
-print(classification_report(y_test, y_pred_nb, target_names=['Ham', 'Spam']))
-
-print("\n" + "="*50)
 
 print("\n TEST DE L'ALGORITHME LDA")
 
@@ -206,15 +200,8 @@ print("Prédiction sur les données de test...")
 y_pred_lda = lda.predict(X_test)
 accuracy_lda = accuracy_score(y_test, y_pred_lda)
 print(f"Accuracy: {accuracy_lda:.4f} ({accuracy_lda*100:.2f}%)")
-print("\nRapport de classification:")
-print(classification_report(y_test, y_pred_lda, target_names=['Ham', 'Spam']))
 
-print("\n" + "="*50)
 print("COMPARAISON DES ALGORITHMES")
-print("="*50)
 print(f"KNN (k=3)    : {accuracy*100:.2f}%")
 print(f"Naive Bayes  : {accuracy_nb*100:.2f}%")
 print(f"LDA          : {accuracy_lda*100:.2f}%")
-print("="*50)
-print("Tests terminés!")
-print("="*50)
