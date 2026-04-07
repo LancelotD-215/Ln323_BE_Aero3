@@ -1,6 +1,4 @@
 #---------------------------------PROJECT: PART I---------------------#
-#%%
-# Modif test
 
 import numpy as np
 import pandas as pd
@@ -42,7 +40,6 @@ X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0
 print(f"Taille de y_train : {len(y_train)}")
 print(f"Taille de y_test : {len(y_test)}")
 
-#%% 
 # KNN
 class KNN:
     def __init__(self, k=3):
@@ -91,9 +88,12 @@ class NaiveBayes:
         self._variances = np.zeros((n_classes, n_features))
         
         for idx, c in enumerate(self._classes):
-           #TO DO
-           pass
-        pass
+            X_c = X[y == c]
+            if hasattr(X_c, 'toarray'):
+                X_c = X_c.toarray()
+            self._priors[idx] = X_c.shape[0] / n_samples
+            self._means[idx, :] = X_c.mean(axis=0)
+            self._variances[idx, :] = X_c.var(axis=0)
     
     def predict(self, X):
         y_pred = [self._predict(x) for x in X]
@@ -101,15 +101,23 @@ class NaiveBayes:
     
     def _predict(self, x):
         posteriors = []
+        if hasattr(x, 'toarray'):
+            x = x.toarray().reshape(-1)
+        else:
+            x = np.array(x).reshape(-1)
         
         for idx, c in enumerate(self._classes):
-         #TO DO
-            pass
+            prior = np.log(self._priors[idx])
+            # On ajoute un petit epsilon pour éviter log(0)
+            var = self._variances[idx] + 1e-9
+            posterior = -0.5 * np.sum(((x - self._means[idx]) ** 2) / var + np.log(var))
+            posterior += prior
+            posteriors.append(posterior)
         
         return self._classes[np.argmax(posteriors)]
-    
+        
 
-    
+
 
 #LDA
 
@@ -125,19 +133,33 @@ class LDA:
         self.cov = np.zeros((n_features, n_features))
         
         for idx, c in enumerate(self.classes):
-            pass
-            #TO DO
+            X_c = X[y == c]
+            if hasattr(X_c, 'toarray'):
+                X_c = X_c.toarray()
+            self.means[idx, :] = X_c.mean(axis=0)
+            self.priors[idx] = X_c.shape[0] / X.shape[0]
+            self.cov += np.dot((X_c - self.means[idx]).T, (X_c - self.means[idx]))
+
+        self.cov /= X.shape[0]
+        self.cov += self.param * np.eye(n_features)
+        self.cov_inv = np.linalg.inv(self.cov)
+
     def predict(self, X):
         y_pred = [self._predict(x) for x in X]
         return np.array(y_pred)
     
     def _predict(self, x):
         posteriors = []
+        if hasattr(x, 'toarray'):
+            x = x.toarray().reshape(-1)
+        else:
+            x = np.array(x).reshape(-1)
         
         for idx, c in enumerate(self.classes):
-            pass
-            #TO DO
-            
+            diff = x - self.means[idx]
+            posterior = -0.5 * diff @ self.cov_inv @ diff + np.log(self.priors[idx])
+            posteriors.append(posterior)
+        
         return self.classes[np.argmax(posteriors)]
 
             
@@ -149,30 +171,50 @@ print("\n TEST DE L'ALGORITHME KNN")
 
 # Test du KNN avec k=3
 print(f"\nTest avec k=3")
-
-# Créer et entraîner le modèle
 knn = KNN(k=3)
 print("Entraînement du KNN avec k=3...")
 knn.fit(X_train, y_train)
-
-# Faire les prédictions
 print("Prédiction sur les données de test...")
 y_pred_knn = knn.predict(X_test)
-
-# Afficher les résultats
 accuracy = accuracy_score(y_test, y_pred_knn)
 print(f"Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
-
-# Rapport détaillé
 print("\nRapport de classification:")
 print(classification_report(y_test, y_pred_knn, target_names=['Ham', 'Spam']))
 
 print("\n" + "="*50)
+
+print("\n TEST DE L'ALGORITHME NAIVE BAYES")
+
+nb = NaiveBayes()
+print("Entraînement du Naive Bayes...")
+nb.fit(X_train, y_train)
+print("Prédiction sur les données de test...")
+y_pred_nb = nb.predict(X_test)
+accuracy_nb = accuracy_score(y_test, y_pred_nb)
+print(f"Accuracy: {accuracy_nb:.4f} ({accuracy_nb*100:.2f}%)")
+print("\nRapport de classification:")
+print(classification_report(y_test, y_pred_nb, target_names=['Ham', 'Spam']))
+
+print("\n" + "="*50)
+
+print("\n TEST DE L'ALGORITHME LDA")
+
+lda = LDA()
+print("Entraînement du LDA...")
+lda.fit(X_train, y_train)
+print("Prédiction sur les données de test...")
+y_pred_lda = lda.predict(X_test)
+accuracy_lda = accuracy_score(y_test, y_pred_lda)
+print(f"Accuracy: {accuracy_lda:.4f} ({accuracy_lda*100:.2f}%)")
+print("\nRapport de classification:")
+print(classification_report(y_test, y_pred_lda, target_names=['Ham', 'Spam']))
+
+print("\n" + "="*50)
+print("COMPARAISON DES ALGORITHMES")
+print("="*50)
+print(f"KNN (k=3)    : {accuracy*100:.2f}%")
+print(f"Naive Bayes  : {accuracy_nb*100:.2f}%")
+print(f"LDA          : {accuracy_lda*100:.2f}%")
+print("="*50)
 print("Tests terminés!")
 print("="*50)
-
-
-
-
-
-
