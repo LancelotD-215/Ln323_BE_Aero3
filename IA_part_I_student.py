@@ -36,7 +36,7 @@ print(f"Nombre de messages (N) : {X_vectorized.shape[0]}")
 print(f"Dimension de l'espace des caractéristiques (P) : {X_vectorized.shape[1]}")
 
 # Séparation des données en données d'entrainement et de test
-X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0.2, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0.2)
 print(f"Taille de y_train : {len(y_train)}")
 print(f"Taille de y_test : {len(y_test)}")
 
@@ -169,39 +169,45 @@ class LDA:
 
 #TO DO: TEST OF THE ALGORITHMS 
 
-print("\n TEST DE L'ALGORITHME KNN")
+n_runs = 5
 
-# Test du KNN avec k=3
-print(f"\nTest avec k=3")
-knn = KNN(k=3)
-print("Entraînement du KNN avec k=3...")
-knn.fit(X_train, y_train)
-print("Prédiction sur les données de test...")
-y_pred_knn = knn.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred_knn)
-print(f"Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
+print("\n TEST DE L'ALGORITHME KNN")
+acc_knn = []
+for i in range(n_runs):
+    X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0.2)
+    knn = KNN(k=3)
+    knn.fit(X_train, y_train)
+    y_pred_knn = knn.predict(X_test)
+    acc = accuracy_score(y_test, y_pred_knn)
+    acc_knn.append(acc)
+    print(f"  Run {i+1}: {acc*100:.2f}%")
+print(f"  Moyenne KNN: {np.mean(acc_knn)*100:.2f}%")
 
 print("\n TEST DE L'ALGORITHME NAIVE BAYES")
-
-nb = NaiveBayes()
-print("Entraînement du Naive Bayes...")
-nb.fit(X_train, y_train)
-print("Prédiction sur les données de test...")
-y_pred_nb = nb.predict(X_test)
-accuracy_nb = accuracy_score(y_test, y_pred_nb)
-print(f"Accuracy: {accuracy_nb:.4f} ({accuracy_nb*100:.2f}%)")
+acc_nb = []
+for i in range(n_runs):
+    X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0.2)
+    nb = NaiveBayes()
+    nb.fit(X_train, y_train)
+    y_pred_nb = nb.predict(X_test)
+    acc = accuracy_score(y_test, y_pred_nb)
+    acc_nb.append(acc)
+    print(f"  Run {i+1}: {acc*100:.2f}%")
+print(f"  Moyenne Naive Bayes: {np.mean(acc_nb)*100:.2f}%")
 
 print("\n TEST DE L'ALGORITHME LDA")
+acc_lda = []
+for i in range(n_runs):
+    X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0.2)
+    lda = LDA()
+    lda.fit(X_train, y_train)
+    y_pred_lda = lda.predict(X_test)
+    acc = accuracy_score(y_test, y_pred_lda)
+    acc_lda.append(acc)
+    print(f"  Run {i+1}: {acc*100:.2f}%")
+print(f"  Moyenne LDA: {np.mean(acc_lda)*100:.2f}%")
 
-lda = LDA()
-print("Entraînement du LDA...")
-lda.fit(X_train, y_train)
-print("Prédiction sur les données de test...")
-y_pred_lda = lda.predict(X_test)
-accuracy_lda = accuracy_score(y_test, y_pred_lda)
-print(f"Accuracy: {accuracy_lda:.4f} ({accuracy_lda*100:.2f}%)")
-
-print("COMPARAISON DES ALGORITHMES")
-print(f"KNN (k=3)    : {accuracy*100:.2f}%")
-print(f"Naive Bayes  : {accuracy_nb*100:.2f}%")
-print(f"LDA          : {accuracy_lda*100:.2f}%")
+print("\nCOMPARAISON DES ALGORITHMES (moyenne sur {} runs)".format(n_runs))
+print(f"KNN (k=3)    : {np.mean(acc_knn)*100:.2f}%")
+print(f"Naive Bayes  : {np.mean(acc_nb)*100:.2f}%")
+print(f"LDA          : {np.mean(acc_lda)*100:.2f}%")
