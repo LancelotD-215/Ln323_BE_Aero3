@@ -32,6 +32,7 @@ vectorizer = CountVectorizer()
 
 # Transformation des messages en matrice de comptage
 X_vectorized = vectorizer.fit_transform(X)
+# La dimension de chaque vecteur est ainsi le nombre total de mots présent dans le vocabulaire
 print(f"Nombre de messages (N) : {X_vectorized.shape[0]}")
 print(f"Dimension de l'espace des caractéristiques (P) : {X_vectorized.shape[1]}")
 
@@ -178,10 +179,15 @@ for i in range(n_runs):
     knn = KNN(k=3)
     knn.fit(X_train, y_train)
     y_pred_knn = knn.predict(X_test)
-    acc = accuracy_score(y_test, y_pred_knn)
+    acc = accuracy_score(y_test, y_pred_knn)  # Plus il y a de données d'entrainement plus l'accuracy-score est élevé
+    # Ce résultat est logique car plus on a de données d'entrainement plus l'algorithme sait voir les types de messages. 
+    # Cependant si on a trop de données d'entrainement on a moins de données de test donc moins de précision
     acc_knn.append(acc)
     print(f"  Run {i+1}: {acc*100:.2f}%")
 print(f"  Moyenne KNN: {np.mean(acc_knn)*100:.2f}%")
+# Performance KNN : L'algorithme KNN est simple et efficace pour ce type de classification. 
+# Ses avantages : pas de phase d'apprentissage, fonctionne bien avec peu de données.
+# Ses inconvénients : sensible au dimensionnement élevé, temps de prédiction long sur gros datasets.
 
 print("\n TEST DE L'ALGORITHME NAIVE BAYES")
 acc_nb = []
@@ -194,6 +200,9 @@ for i in range(n_runs):
     acc_nb.append(acc)
     print(f"  Run {i+1}: {acc*100:.2f}%")
 print(f"  Moyenne Naive Bayes: {np.mean(acc_nb)*100:.2f}%")
+# Performance Naive Bayes : Excellent pour la classification de texte grâce à l'hypothèse d'indépendance des mots.
+# Ses avantages : rapide à entraîner, fonctionne bien avec peu de données, résistant au sur-apprentissage.
+# Ses inconvénients : hypothèse d'indépendance parfois irréaliste, sensible aux features corrélées.
 
 print("\n TEST DE L'ALGORITHME LDA")
 acc_lda = []
@@ -206,6 +215,9 @@ for i in range(n_runs):
     acc_lda.append(acc)
     print(f"  Run {i+1}: {acc*100:.2f}%")
 print(f"  Moyenne LDA: {np.mean(acc_lda)*100:.2f}%")
+# Performance LDA : Méthode linéaire robuste qui assume une distribution gaussienne des données.
+# Ses avantages : réduit la dimensionnalité, gère bien les données gaussiennes, stable numériquement.
+# Ses inconvénients : assume des covariances égales entre classes, peut mal performer si hypothèses incorrectes.
 
 print("\nCOMPARAISON DES ALGORITHMES (moyenne sur {} runs)".format(n_runs))
 print(f"KNN (k=3)    : {np.mean(acc_knn)*100:.2f}%")

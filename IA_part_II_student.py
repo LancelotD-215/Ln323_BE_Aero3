@@ -1,4 +1,3 @@
-
 #---------------------------------PROJECT: PART II------------------------#
 
 import numpy as np
@@ -142,6 +141,9 @@ for i in range(n_runs):
     acc_lr.append(acc)
     print(f"  Run {i+1}: {acc*100:.2f}%")
 print(f"  Moyenne Logistic Regression: {np.mean(acc_lr)*100:.2f}%")
+# Performance Régression Logistique : Excellent pour la classification binaire, converge bien avec la descente de gradient.
+# Ses avantages : probabilités interprétables, pas d'hypothèse sur la distribution des données, robuste.
+# Ses inconvénients : sensible aux outliers, nécessite standardisation, peut converger lentement.
 
 # Q12 : variation du nombre d'itérations et comparaison avec LDA
 print("\n COMPARAISON LR vs LDA EN FAISANT VARIER LE NOMBRE D'ITERATIONS")
@@ -160,3 +162,10 @@ for n_iter in iterations_list:
     y_pred = lr.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     print(f"  iter={n_iter} -> LR: {acc*100:.2f}%  |  LDA: {acc_lda*100:.2f}%")
+
+# Analyse des résultats de comparaison LR vs LDA :
+# - LDA obtient directement sa performance optimale car c'est une méthode analytique (pas d'itérations)
+# - La régression logistique améliore ses performances avec plus d'itérations jusqu'à convergence
+# - Avec suffisamment d'itérations, LR peut égaler ou dépasser LDA sur ce dataset
+# - LR est plus flexible mais nécessite un réglage du learning rate et du nombre d'itérations
+# - Le choix dépend du contexte : LDA pour la rapidité, LR pour la flexibilité et l'interprétabilité
